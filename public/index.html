@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>San Bernardino County Farmers Markets | Find Fresh Local Produce</title>
+  <meta name="description" content="Find all 26 certified farmers markets in San Bernardino County. Browse by day of the week, see what's open today, and get directions.">
+  <meta property="og:title" content="San Bernardino County Farmers Markets">
+  <meta property="og:description" content="Find fresh, local produce at 26 certified farmers markets across the Inland Empire.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥕</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ── Hero ──────────────────────────────────────────── -->
+<header class="hero">
+  <div class="hero-inner">
+    <span class="hero-icon" aria-hidden="true">🌽</span>
+    <h1>San Bernardino County Farmers Markets</h1>
+    <p>Find fresh, local produce at 26 certified farmers markets across the Inland Empire</p>
+    <div class="hero-actions">
+      <a href="https://calendar.google.com/calendar/r?cid=5f0ce576c0e1409732b38d1a73089eed7387cec3d0ba59657bcffa79459a75de@group.calendar.google.com" class="btn-cal" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Add to Google Calendar
+      </a>
+      <a href="https://calendar.google.com/calendar/ical/5f0ce576c0e1409732b38d1a73089eed7387cec3d0ba59657bcffa79459a75de%40group.calendar.google.com/public/basic.ics" class="btn-ical">
+        Subscribe via iCal (Apple / Outlook)
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ── Filter bar ────────────────────────────────────── -->
+<nav class="filter-bar" aria-label="Filter by day">
+  <div class="filter-inner">
+    <span class="filter-label">Filter:</span>
+    <button class="day-btn active" data-day="all">All Days</button>
+    <button class="day-btn" data-day="Monday">Mon</button>
+    <button class="day-btn" data-day="Tuesday">Tue</button>
+    <button class="day-btn" data-day="Wednesday">Wed</button>
+    <button class="day-btn" data-day="Thursday">Thu</button>
+    <button class="day-btn" data-day="Friday">Fri</button>
+    <button class="day-btn" data-day="Saturday">Sat</button>
+    <button class="day-btn" data-day="Sunday">Sun</button>
+  </div>
+</nav>
+
+<!-- ── Markets ───────────────────────────────────────── -->
+<main class="main" id="markets"></main>
+
+<div class="no-results" id="no-results">No markets found for the selected day.</div>
+
+<!-- ── Footer ────────────────────────────────────────── -->
+<footer class="footer">
+  Data sourced from <a href="https://awm.sbcounty.gov/certified-farmers-markets-locations/" target="_blank" rel="noopener">San Bernardino County Agriculture Weights &amp; Measures</a>
+</footer>
+
+<script>
+// ── Market data ──────────────────────────────────────────
+const markets = [
+  { name:"29 Palms Farmers Market", address:"73551 Twentynine Palms Hwy, Twentynine Palms, CA 92277", days:["Saturday"], hours:"Sat 8am\u20131pm", season:"Year-round", seasonal:false, phone:"760.362.3642" },
+  { name:"Arrowhead Regional Medical Center", address:"400 N Pepper Ave, Colton, CA 92324", days:["Wednesday"], hours:"Wed 8:30am\u20131:30pm", season:"Year-round", seasonal:false, phone:"310.383.3708" },
+  { name:"Big Bear Farmers Market", address:"42900 Big Bear Blvd, Big Bear Lake, CA 92315", days:["Tuesday"], hours:"Tue 8:30am\u20131pm", season:"Apr\u2013Sep", seasonal:true, phone:"760.247.3769" },
+  { name:"Big Bear Lake Farmers Market", address:"41220 Park Ave, Big Bear Lake, CA 92315", days:["Friday"], hours:"Fri 3\u20138pm", season:"Apr\u2013Oct", seasonal:true, phone:"909.547.4567" },
+  { name:"Countyline Farmers Market", address:"34900 Oak Glen Rd, Yucaipa, CA 92399", days:["Saturday","Thursday"], hours:"Sat 8am\u20131pm (year-round); Thu 5\u20138pm (Jul\u2013Dec)", season:"Year-round Sat; Jul\u2013Dec Thu", seasonal:false, phone:"909.793.9444" },
+  { name:"Farmers Market @ The Grove School", address:"11126 Iowa Ave, Redlands, CA 92373", days:["Saturday"], hours:"Sat 8am\u201312pm", season:"Year-round", seasonal:false, phone:"909.241.8100" },
+  { name:"North Fontana Farmers Market", address:"15556 Summit Ave, Fontana, CA 92344", days:["Sunday"], hours:"Sun 10am\u20133pm", season:"Year-round", seasonal:false, phone:"760.956.0758" },
+  { name:"Heritage @ Chaffey College", address:"5885 Haven Ave, Rancho Cucamonga, CA 91737", days:["Thursday"], hours:"1st & 3rd Thu 11am\u20133pm", season:"Sep\u2013Jun", seasonal:true, phone:"909.264.5195" },
+  { name:"Heritage @ IEHP", address:"10801 6th St, Rancho Cucamonga, CA 91730", days:["Thursday"], hours:"2nd & 4th Thu 10am\u20131pm", season:"Year-round", seasonal:false, phone:"909.901.9758" },
+  { name:"Heritage @ Terra Vista", address:"10808 E Foothill Blvd, Rancho Cucamonga, CA 91730", days:["Saturday"], hours:"Sat 9am\u20132pm", season:"Year-round", seasonal:false, phone:"909.445.0476" },
+  { name:"Heritage @ Shoppes at Chino Hills", address:"13920 City Center Dr, Chino Hills, CA 91709", days:["Wednesday"], hours:"Wed 3:30\u20137:30pm", season:"Year-round", seasonal:false, phone:"909.901.9758" },
+  { name:"Hesperia Community Farmers Market", address:"15833 Smoke Tree St, Hesperia, CA 92345", days:["Saturday"], hours:"Sat 10am\u20132pm", season:"Year-round", seasonal:false, phone:"760.713.3860" },
+  { name:"High Desert Farmers Market", address:"18422 Bear Valley Rd, Victorville, CA 92395", days:["Thursday"], hours:"Thu 8am\u201312pm", season:"Year-round", seasonal:false, phone:"760.247.3769" },
+  { name:"Joshua Tree Certified Farmers Market", address:"61675 29 Palms Hwy, Joshua Tree, CA", days:["Saturday"], hours:"Sat 8am\u20131pm", season:"Year-round", seasonal:false, phone:"760.420.7529" },
+  { name:"Oak Glen Farmers Market", address:"38955 Oak Glen Rd, Yucaipa, CA", days:["Saturday","Sunday"], hours:"Sat & Sun 10am\u20133pm", season:"Aug\u2013Dec & Mar\u2013Jul", seasonal:true, phone:"951.291.3776" },
+  { name:"Phelan Certified Farmers Market", address:"4128 Warbler Rd, Phelan, CA 92371", days:["Monday"], hours:"Mon 2\u20136pm (Apr\u2013Nov); Mon 2\u20135pm (Nov\u2013Mar)", season:"Year-round (hours vary)", seasonal:false, phone:"760.412.9746" },
+  { name:"Redlands Downtown\u2019s Morning Market", address:"100 Block Redlands Blvd, Redlands, CA 92373", days:["Saturday"], hours:"Sat 9am\u20131pm", season:"Year-round", seasonal:false, phone:"909.674.5619" },
+  { name:"Rialto Certified Farmers Market", address:"Rialto Ave & Willow Ave, Rialto, CA 92376", days:["Wednesday"], hours:"Wed 10am\u20132pm", season:"Year-round", seasonal:false, phone:"909.820.2519" },
+  { name:"Rim of the World Farmers Market", address:"27400 Hwy 18, Lake Arrowhead, CA 92352", days:["Sunday"], hours:"Sun 10am\u20132pm", season:"Apr\u2013Oct", seasonal:true, phone:"909.547.4567" },
+  { name:"Running Springs Farmers Market", address:"2645 Whispering Pines Dr, Running Springs, CA 92382", days:["Saturday"], hours:"Sat 9am\u20131pm", season:"Apr\u2013Nov", seasonal:true, phone:"909.867.2411" },
+  { name:"San Bernardino Certified Farmers Market", address:"349 North E St, San Bernardino, CA 92401", days:["Tuesday"], hours:"Tue 8am\u20131pm", season:"Year-round", seasonal:false, phone:"714.345.3087" },
+  { name:"South Fontana Farmers Market", address:"14501 Live Oak Ave, Fontana, CA 92345", days:["Thursday"], hours:"Thu 3\u20137pm", season:"Year-round", seasonal:false, phone:"760.956.0758" },
+  { name:"Twin Peaks Farmers Market", address:"26012 CA-189, Twin Peaks, CA 92391", days:["Thursday"], hours:"Thu 2\u20137pm", season:"Year-round", seasonal:false, phone:"909.936.1184" },
+  { name:"Upland Farmers Market", address:"305 N 2nd Ave, Upland, CA 91786", days:["Saturday"], hours:"Sat 9am\u20132pm", season:"Year-round", seasonal:false, phone:"909.203.8723" },
+  { name:"Yucca Valley Certified Farmers Market", address:"7600 Sage Ave, Yucca Valley, CA 92284", days:["Sunday"], hours:"Sun 8am\u20132pm", season:"Year-round", seasonal:false, phone:"760.362.3642" },
+  { name:"Wrightwood Certified Farmers Market", address:"1275 Hwy 2, Wrightwood, CA 92397", days:["Friday"], hours:"Fri 4\u20137pm (Apr\u2013Oct); Fri 3\u20136pm (Nov\u2013Mar)", season:"Year-round (hours vary)", seasonal:false, phone:"661.330.9009" }
+];
+
+// ── Helpers ──────────────────────────────────────────────
+const DAY_ORDER = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const today = DAY_ORDER[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
+
+function mapsUrl(address) {
+  return "https://www.google.com/maps/search/" + encodeURIComponent(address);
+}
+
+function icon(type) {
+  const icons = {
+    pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+    phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+    map: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>',
+    cal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'
+  };
+  return icons[type] || '';
+}
+
+// ── Build day sections ───────────────────────────────────
+function buildMarkets(filterDay) {
+  const main = document.getElementById('markets');
+  const noResults = document.getElementById('no-results');
+  main.innerHTML = '';
+  let anyVisible = false;
+
+  DAY_ORDER.forEach(day => {
+    if (filterDay !== 'all' && filterDay !== day) return;
+
+    const dayMarkets = markets.filter(m => m.days.includes(day));
+    if (dayMarkets.length === 0) return;
+    anyVisible = true;
+
+    const isToday = day === today;
+    const section = document.createElement('section');
+    section.className = 'day-section';
+    section.setAttribute('data-day', day);
+
+    section.innerHTML = `
+      <div class="day-header">
+        <h2>${day}</h2>
+        <span class="day-badge ${isToday ? 'today-badge' : ''}">${dayMarkets.length} market${dayMarkets.length > 1 ? 's' : ''}${isToday ? ' \u2014 Today' : ''}</span>
+      </div>
+      <div class="markets-grid">
+        ${dayMarkets.map(m => {
+          const openToday = isToday;
+          return `
+          <article class="market-card ${openToday ? 'open-today' : ''}">
+            <div class="market-name">
+              ${openToday ? '<span class="open-dot" title="Open today"></span>' : ''}
+              <span>${m.name}</span>
+            </div>
+            <div class="market-detail">
+              ${icon('pin')}
+              <span>${m.address}</span>
+            </div>
+            <div class="market-detail">
+              ${icon('clock')}
+              <span>${m.hours}</span>
+            </div>
+            <div class="market-detail">
+              <span class="season-tag ${m.seasonal ? 'seasonal' : ''}">${m.season}</span>
+            </div>
+            <div class="market-detail">
+              ${icon('phone')}
+              <a href="tel:${m.phone.replace(/\./g, '')}" style="color:inherit;text-decoration:none;">${m.phone}</a>
+            </div>
+            <div class="market-links">
+              <a href="${mapsUrl(m.address)}" target="_blank" rel="noopener" class="market-link">
+                ${icon('map')} Directions
+              </a>
+            </div>
+          </article>`;
+        }).join('')}
+      </div>
+    `;
+    main.appendChild(section);
+  });
+
+  noResults.style.display = anyVisible ? 'none' : 'block';
+}
+
+// ── Filter buttons ───────────────────────────────────────
+const buttons = document.querySelectorAll('.day-btn');
+
+// Highlight today's button
+buttons.forEach(btn => {
+  if (btn.dataset.day === today) btn.classList.add('today-highlight');
+});
+
+buttons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    buttons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    buildMarkets(btn.dataset.day);
+  });
+});
+
+// ── Initial render ───────────────────────────────────────
+buildMarkets('all');
+</script>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "sb-farmers-markets",
+  "version": "1.0.0",
+  "description": "San Bernardino County Certified Farmers Markets directory",
+  "scripts": {
+    "build": "cp -r public/ .output/ 2>/dev/null || mkdir -p .output && cp -r public/* .output/"
+  },
+  "private": true
+}
