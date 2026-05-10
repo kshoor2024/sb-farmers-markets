@@ -10,6 +10,8 @@
   <meta property="og:type" content="website">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥕</text></svg>">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 
@@ -46,6 +48,11 @@
   </div>
 </nav>
 
+<!-- ── Map ───────────────────────────────────────────── -->
+<section class="map-wrap">
+  <div id="map"></div>
+</section>
+
 <!-- ── Markets ───────────────────────────────────────── -->
 <main class="main" id="markets"></main>
 
@@ -59,32 +66,32 @@
 <script>
 // ── Market data ──────────────────────────────────────────
 const markets = [
-  { name:"29 Palms Farmers Market", address:"73551 Twentynine Palms Hwy, Twentynine Palms, CA 92277", days:["Saturday"], hours:"Sat 8am\u20131pm", season:"Year-round", seasonal:false, phone:"760.362.3642" },
-  { name:"Arrowhead Regional Medical Center", address:"400 N Pepper Ave, Colton, CA 92324", days:["Wednesday"], hours:"Wed 8:30am\u20131:30pm", season:"Year-round", seasonal:false, phone:"310.383.3708" },
-  { name:"Big Bear Farmers Market", address:"42900 Big Bear Blvd, Big Bear Lake, CA 92315", days:["Tuesday"], hours:"Tue 8:30am\u20131pm", season:"Apr\u2013Sep", seasonal:true, phone:"760.247.3769" },
-  { name:"Big Bear Lake Farmers Market", address:"41220 Park Ave, Big Bear Lake, CA 92315", days:["Friday"], hours:"Fri 3\u20138pm", season:"Apr\u2013Oct", seasonal:true, phone:"909.547.4567" },
-  { name:"Countyline Farmers Market", address:"34900 Oak Glen Rd, Yucaipa, CA 92399", days:["Saturday","Thursday"], hours:"Sat 8am\u20131pm (year-round); Thu 5\u20138pm (Jul\u2013Dec)", season:"Year-round Sat; Jul\u2013Dec Thu", seasonal:false, phone:"909.793.9444" },
-  { name:"Farmers Market @ The Grove School", address:"11126 Iowa Ave, Redlands, CA 92373", days:["Saturday"], hours:"Sat 8am\u201312pm", season:"Year-round", seasonal:false, phone:"909.241.8100" },
-  { name:"North Fontana Farmers Market", address:"15556 Summit Ave, Fontana, CA 92344", days:["Sunday"], hours:"Sun 10am\u20133pm", season:"Year-round", seasonal:false, phone:"760.956.0758" },
-  { name:"Heritage @ Chaffey College", address:"5885 Haven Ave, Rancho Cucamonga, CA 91737", days:["Thursday"], hours:"1st & 3rd Thu 11am\u20133pm", season:"Sep\u2013Jun", seasonal:true, phone:"909.264.5195" },
-  { name:"Heritage @ IEHP", address:"10801 6th St, Rancho Cucamonga, CA 91730", days:["Thursday"], hours:"2nd & 4th Thu 10am\u20131pm", season:"Year-round", seasonal:false, phone:"909.901.9758" },
-  { name:"Heritage @ Terra Vista", address:"10808 E Foothill Blvd, Rancho Cucamonga, CA 91730", days:["Saturday"], hours:"Sat 9am\u20132pm", season:"Year-round", seasonal:false, phone:"909.445.0476" },
-  { name:"Heritage @ Shoppes at Chino Hills", address:"13920 City Center Dr, Chino Hills, CA 91709", days:["Wednesday"], hours:"Wed 3:30\u20137:30pm", season:"Year-round", seasonal:false, phone:"909.901.9758" },
-  { name:"Hesperia Community Farmers Market", address:"15833 Smoke Tree St, Hesperia, CA 92345", days:["Saturday"], hours:"Sat 10am\u20132pm", season:"Year-round", seasonal:false, phone:"760.713.3860" },
-  { name:"High Desert Farmers Market", address:"18422 Bear Valley Rd, Victorville, CA 92395", days:["Thursday"], hours:"Thu 8am\u201312pm", season:"Year-round", seasonal:false, phone:"760.247.3769" },
-  { name:"Joshua Tree Certified Farmers Market", address:"61675 29 Palms Hwy, Joshua Tree, CA", days:["Saturday"], hours:"Sat 8am\u20131pm", season:"Year-round", seasonal:false, phone:"760.420.7529" },
-  { name:"Oak Glen Farmers Market", address:"38955 Oak Glen Rd, Yucaipa, CA", days:["Saturday","Sunday"], hours:"Sat & Sun 10am\u20133pm", season:"Aug\u2013Dec & Mar\u2013Jul", seasonal:true, phone:"951.291.3776" },
-  { name:"Phelan Certified Farmers Market", address:"4128 Warbler Rd, Phelan, CA 92371", days:["Monday"], hours:"Mon 2\u20136pm (Apr\u2013Nov); Mon 2\u20135pm (Nov\u2013Mar)", season:"Year-round (hours vary)", seasonal:false, phone:"760.412.9746" },
-  { name:"Redlands Downtown\u2019s Morning Market", address:"100 Block Redlands Blvd, Redlands, CA 92373", days:["Saturday"], hours:"Sat 9am\u20131pm", season:"Year-round", seasonal:false, phone:"909.674.5619" },
-  { name:"Rialto Certified Farmers Market", address:"Rialto Ave & Willow Ave, Rialto, CA 92376", days:["Wednesday"], hours:"Wed 10am\u20132pm", season:"Year-round", seasonal:false, phone:"909.820.2519" },
-  { name:"Rim of the World Farmers Market", address:"27400 Hwy 18, Lake Arrowhead, CA 92352", days:["Sunday"], hours:"Sun 10am\u20132pm", season:"Apr\u2013Oct", seasonal:true, phone:"909.547.4567" },
-  { name:"Running Springs Farmers Market", address:"2645 Whispering Pines Dr, Running Springs, CA 92382", days:["Saturday"], hours:"Sat 9am\u20131pm", season:"Apr\u2013Nov", seasonal:true, phone:"909.867.2411" },
-  { name:"San Bernardino Certified Farmers Market", address:"349 North E St, San Bernardino, CA 92401", days:["Tuesday"], hours:"Tue 8am\u20131pm", season:"Year-round", seasonal:false, phone:"714.345.3087" },
-  { name:"South Fontana Farmers Market", address:"14501 Live Oak Ave, Fontana, CA 92345", days:["Thursday"], hours:"Thu 3\u20137pm", season:"Year-round", seasonal:false, phone:"760.956.0758" },
-  { name:"Twin Peaks Farmers Market", address:"26012 CA-189, Twin Peaks, CA 92391", days:["Thursday"], hours:"Thu 2\u20137pm", season:"Year-round", seasonal:false, phone:"909.936.1184" },
-  { name:"Upland Farmers Market", address:"305 N 2nd Ave, Upland, CA 91786", days:["Saturday"], hours:"Sat 9am\u20132pm", season:"Year-round", seasonal:false, phone:"909.203.8723" },
-  { name:"Yucca Valley Certified Farmers Market", address:"7600 Sage Ave, Yucca Valley, CA 92284", days:["Sunday"], hours:"Sun 8am\u20132pm", season:"Year-round", seasonal:false, phone:"760.362.3642" },
-  { name:"Wrightwood Certified Farmers Market", address:"1275 Hwy 2, Wrightwood, CA 92397", days:["Friday"], hours:"Fri 4\u20137pm (Apr\u2013Oct); Fri 3\u20136pm (Nov\u2013Mar)", season:"Year-round (hours vary)", seasonal:false, phone:"661.330.9009" }
+  { name:"29 Palms Farmers Market", address:"73551 Twentynine Palms Hwy, Twentynine Palms, CA 92277", days:["Saturday"], hours:"Sat 8am\u20131pm", season:"Year-round", seasonal:false, phone:"760.362.3642", lat:34.1350, lng:-116.0799 },
+  { name:"Arrowhead Regional Medical Center", address:"400 N Pepper Ave, Colton, CA 92324", days:["Wednesday"], hours:"Wed 8:30am\u20131:30pm", season:"Year-round", seasonal:false, phone:"310.383.3708", lat:34.0737, lng:-117.3507 },
+  { name:"Big Bear Farmers Market", address:"42900 Big Bear Blvd, Big Bear Lake, CA 92315", days:["Tuesday"], hours:"Tue 8:30am\u20131pm", season:"Apr\u2013Sep", seasonal:true, phone:"760.247.3769", lat:34.2605, lng:-116.8669 },
+  { name:"Big Bear Lake Farmers Market", address:"41220 Park Ave, Big Bear Lake, CA 92315", days:["Friday"], hours:"Fri 3\u20138pm", season:"Apr\u2013Oct", seasonal:true, phone:"909.547.4567", lat:34.2474, lng:-116.9024 },
+  { name:"Countyline Farmers Market", address:"34900 Oak Glen Rd, Yucaipa, CA 92399", days:["Saturday","Thursday"], hours:"Sat 8am\u20131pm (year-round); Thu 5\u20138pm (Jul\u2013Dec)", season:"Year-round Sat; Jul\u2013Dec Thu", seasonal:false, phone:"909.793.9444", lat:34.0485, lng:-117.0430 },
+  { name:"Farmers Market @ The Grove School", address:"11126 Iowa Ave, Redlands, CA 92373", days:["Saturday"], hours:"Sat 8am\u201312pm", season:"Year-round", seasonal:false, phone:"909.241.8100", lat:34.0590, lng:-117.1920 },
+  { name:"North Fontana Farmers Market", address:"15556 Summit Ave, Fontana, CA 92344", days:["Sunday"], hours:"Sun 10am\u20133pm", season:"Year-round", seasonal:false, phone:"760.956.0758", lat:34.1503, lng:-117.4669 },
+  { name:"Heritage @ Chaffey College", address:"5885 Haven Ave, Rancho Cucamonga, CA 91737", days:["Thursday"], hours:"1st & 3rd Thu 11am\u20133pm", season:"Sep\u2013Jun", seasonal:true, phone:"909.264.5195", lat:34.1481, lng:-117.5704 },
+  { name:"Heritage @ IEHP", address:"10801 6th St, Rancho Cucamonga, CA 91730", days:["Thursday"], hours:"2nd & 4th Thu 10am\u20131pm", season:"Year-round", seasonal:false, phone:"909.901.9758", lat:34.0824, lng:-117.5695 },
+  { name:"Heritage @ Terra Vista", address:"10808 E Foothill Blvd, Rancho Cucamonga, CA 91730", days:["Saturday"], hours:"Sat 9am\u20132pm", season:"Year-round", seasonal:false, phone:"909.445.0476", lat:34.1067, lng:-117.6290 },
+  { name:"Heritage @ Shoppes at Chino Hills", address:"13920 City Center Dr, Chino Hills, CA 91709", days:["Wednesday"], hours:"Wed 3:30\u20137:30pm", season:"Year-round", seasonal:false, phone:"909.901.9758", lat:34.0003, lng:-117.7305 },
+  { name:"Hesperia Community Farmers Market", address:"15833 Smoke Tree St, Hesperia, CA 92345", days:["Saturday"], hours:"Sat 10am\u20132pm", season:"Year-round", seasonal:false, phone:"760.713.3860", lat:34.4278, lng:-117.3180 },
+  { name:"High Desert Farmers Market", address:"18422 Bear Valley Rd, Victorville, CA 92395", days:["Thursday"], hours:"Thu 8am\u201312pm", season:"Year-round", seasonal:false, phone:"760.247.3769", lat:34.4710, lng:-117.2602 },
+  { name:"Joshua Tree Certified Farmers Market", address:"61675 29 Palms Hwy, Joshua Tree, CA", days:["Saturday"], hours:"Sat 8am\u20131pm", season:"Year-round", seasonal:false, phone:"760.420.7529", lat:34.1346, lng:-116.3179 },
+  { name:"Oak Glen Farmers Market", address:"38955 Oak Glen Rd, Yucaipa, CA", days:["Saturday","Sunday"], hours:"Sat & Sun 10am\u20133pm", season:"Aug\u2013Dec & Mar\u2013Jul", seasonal:true, phone:"951.291.3776", lat:34.0271, lng:-117.0796 },
+  { name:"Phelan Certified Farmers Market", address:"4128 Warbler Rd, Phelan, CA 92371", days:["Monday"], hours:"Mon 2\u20136pm (Apr\u2013Nov); Mon 2\u20135pm (Nov\u2013Mar)", season:"Year-round (hours vary)", seasonal:false, phone:"760.412.9746", lat:34.4219, lng:-117.5721 },
+  { name:"Redlands Downtown\u2019s Morning Market", address:"100 Block Redlands Blvd, Redlands, CA 92373", days:["Saturday"], hours:"Sat 9am\u20131pm", season:"Year-round", seasonal:false, phone:"909.674.5619", lat:34.0631, lng:-117.1825 },
+  { name:"Rialto Certified Farmers Market", address:"Rialto Ave & Willow Ave, Rialto, CA 92376", days:["Wednesday"], hours:"Wed 10am\u20132pm", season:"Year-round", seasonal:false, phone:"909.820.2519", lat:34.0973, lng:-117.3769 },
+  { name:"Rim of the World Farmers Market", address:"27400 Hwy 18, Lake Arrowhead, CA 92352", days:["Sunday"], hours:"Sun 10am\u20132pm", season:"Apr\u2013Oct", seasonal:true, phone:"909.547.4567", lat:34.2323, lng:-117.2053 },
+  { name:"Running Springs Farmers Market", address:"2645 Whispering Pines Dr, Running Springs, CA 92382", days:["Saturday"], hours:"Sat 9am\u20131pm", season:"Apr\u2013Nov", seasonal:true, phone:"909.867.2411", lat:34.2060, lng:-117.1055 },
+  { name:"San Bernardino Certified Farmers Market", address:"349 North E St, San Bernardino, CA 92401", days:["Tuesday"], hours:"Tue 8am\u20131pm", season:"Year-round", seasonal:false, phone:"714.345.3087", lat:34.1060, lng:-117.2941 },
+  { name:"South Fontana Farmers Market", address:"14501 Live Oak Ave, Fontana, CA 92345", days:["Thursday"], hours:"Thu 3\u20137pm", season:"Year-round", seasonal:false, phone:"760.956.0758", lat:34.0397, lng:-117.4903 },
+  { name:"Twin Peaks Farmers Market", address:"26012 CA-189, Twin Peaks, CA 92391", days:["Thursday"], hours:"Thu 2\u20137pm", season:"Year-round", seasonal:false, phone:"909.936.1184", lat:34.2391, lng:-117.2353 },
+  { name:"Upland Farmers Market", address:"305 N 2nd Ave, Upland, CA 91786", days:["Saturday"], hours:"Sat 9am\u20132pm", season:"Year-round", seasonal:false, phone:"909.203.8723", lat:34.0974, lng:-117.6485 },
+  { name:"Yucca Valley Certified Farmers Market", address:"7600 Sage Ave, Yucca Valley, CA 92284", days:["Sunday"], hours:"Sun 8am\u20132pm", season:"Year-round", seasonal:false, phone:"760.362.3642", lat:34.1140, lng:-116.4243 },
+  { name:"Wrightwood Certified Farmers Market", address:"1275 Hwy 2, Wrightwood, CA 92397", days:["Friday"], hours:"Fri 4\u20137pm (Apr\u2013Oct); Fri 3\u20136pm (Nov\u2013Mar)", season:"Year-round (hours vary)", seasonal:false, phone:"661.330.9009", lat:34.3613, lng:-117.6340 }
 ];
 
 // ── Helpers ──────────────────────────────────────────────
@@ -187,6 +194,65 @@ buttons.forEach(btn => {
 
 // ── Initial render ───────────────────────────────────────
 buildMarkets('all');
+
+// ── Map ─────────────────────────────────────────────────
+const map = L.map('map', { scrollWheelZoom: false }).setView([34.15, -117.15], 9);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors',
+  maxZoom: 18
+}).addTo(map);
+
+let mapMarkers = [];
+
+function pulseIcon(isOpen) {
+  const color = isOpen ? '#4caf50' : '#9ca3af';
+  const pulse = isOpen
+    ? '<span style="position:absolute;width:24px;height:24px;border-radius:50%;background:'+color+';opacity:.35;top:50%;left:50%;transform:translate(-50%,-50%);animation:mapPulse 2s ease-in-out infinite;"></span>'
+    : '';
+  return L.divIcon({
+    className: '',
+    html: '<div style="position:relative;width:14px;height:14px;">'+pulse+'<span style="position:absolute;width:14px;height:14px;border-radius:50%;background:'+color+';border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;"></span></div>',
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+    popupAnchor: [0, -10]
+  });
+}
+
+function updateMap(filterDay) {
+  mapMarkers.forEach(m => map.removeLayer(m));
+  mapMarkers = [];
+
+  const visible = filterDay === 'all'
+    ? markets
+    : markets.filter(m => m.days.includes(filterDay));
+
+  visible.forEach(m => {
+    const isOpen = m.days.includes(today);
+    const popupHtml = '<div style="font-family:-apple-system,sans-serif;min-width:180px;">'
+      + '<strong style="font-size:14px;">' + m.name + '</strong><br>'
+      + '<span style="color:#555;font-size:12px;">' + m.hours + '</span><br>'
+      + '<span style="font-size:12px;color:' + (isOpen ? '#16a34a' : '#78716c') + ';">' + (isOpen ? 'Open today' : m.days.join(', ')) + '</span><br>'
+      + '<a href="' + mapsUrl(m.address) + '" target="_blank" rel="noopener" style="font-size:12px;color:#2d6a2d;font-weight:600;">Directions &rarr;</a>'
+      + '</div>';
+    const marker = L.marker([m.lat, m.lng], { icon: pulseIcon(isOpen), zIndexOffset: isOpen ? 1000 : 0 })
+      .bindPopup(popupHtml, { closeButton: false })
+      .addTo(map);
+    mapMarkers.push(marker);
+  });
+
+  if (visible.length) {
+    const group = L.featureGroup(mapMarkers);
+    map.fitBounds(group.getBounds().pad(0.1));
+  }
+}
+
+// Wire filter buttons to also update map
+buttons.forEach(btn => {
+  const orig = btn.onclick;
+  btn.addEventListener('click', () => updateMap(btn.dataset.day));
+});
+
+updateMap('all');
 </script>
 
 </body>
