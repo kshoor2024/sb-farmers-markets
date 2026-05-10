@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sb-farmers-markets.vercel.app/sitemap.xml
