@@ -230,9 +230,10 @@ function updateMap(filterDay) {
     const isOpen = m.days.includes(today);
     const popupHtml = '<div style="font-family:-apple-system,sans-serif;min-width:180px;">'
       + '<strong style="font-size:14px;">' + m.name + '</strong><br>'
+      + '<span style="color:#555;font-size:12px;">' + m.address + '</span><br>'
       + '<span style="color:#555;font-size:12px;">' + m.hours + '</span><br>'
-      + '<span style="font-size:12px;color:' + (isOpen ? '#16a34a' : '#78716c') + ';">' + (isOpen ? 'Open today' : m.days.join(', ')) + '</span><br>'
-      + '<a href="' + mapsUrl(m.address) + '" target="_blank" rel="noopener" style="font-size:12px;color:#2d6a2d;font-weight:600;">Directions &rarr;</a>'
+      + '<span style="color:#555;font-size:12px;">' + m.season + '</span>'
+      + (m.phone ? '<br><span style="color:#555;font-size:12px;">' + m.phone + '</span>' : '')
       + '</div>';
     const marker = L.marker([m.lat, m.lng], { icon: pulseIcon(isOpen), zIndexOffset: isOpen ? 1000 : 0 })
       .bindPopup(popupHtml, { closeButton: false })
